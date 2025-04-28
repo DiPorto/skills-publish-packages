@@ -23,14 +23,19 @@ jobs:
       - name: Set lower-case owner
         shell: bash
         run: |
-          # Приводим OWNER к нижнему регистру
+          # Приводим OWNER к нижнему регистру и сохраняем его
           echo "LOWER_OWNER=$(echo \"$GITHUB_REPOSITORY_OWNER\" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Debug lower-case owner
+        run: |
+          echo ">> LOWER_OWNER is '$LOWER_OWNER'"
+          echo ">> repository is '$GITHUB_REPOSITORY'"
 
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ env.LOWER_OWNER }}      # теперь diporto
+          username: ${{ env.LOWER_OWNER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install pnpm & build

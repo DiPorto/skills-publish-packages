@@ -25,7 +25,7 @@ jobs:
       # 4.4. Сборка и пуш Docker-образа
       - uses: docker/build-push-action@v5
         with:
-          context: .   # корень репозитория, где лежит Dockerfile
+          context: .  # корень репозитория, где лежит Dockerfile
           push: true
           tags: |
             ghcr.io/diporto/skills-publish-packages:latest

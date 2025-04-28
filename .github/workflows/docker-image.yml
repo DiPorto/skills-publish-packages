@@ -1,3 +1,4 @@
+# .github/workflows/docker-image.yml
 name: Build and Publish Docker Image
 
 on:
@@ -16,9 +17,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pnpm & build
-        # если ваш package.json и Dockerfile лежат в корне репозитория,
-        # можно убрать working-directory
-        working-directory: ./skills-publish-packages  
         run: |
           npm install -g pnpm
           pnpm install
@@ -34,8 +32,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          # путь к папке, где лежит ваш Dockerfile
-          context: ./skills-publish-packages  
+          context: .   # вот так — из корня
           push: true
           tags: |
             ghcr.io/DiPorto/skills-publish-packages:latest

@@ -26,7 +26,7 @@ jobs:
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: DiPorto
+          username: diporto
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # 4.4. Сборка и пуш Docker-образа

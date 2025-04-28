@@ -1,7 +1,7 @@
 name: Build and Publish Docker Image
 
 permissions:
-  contents: read      # чтение репо
+  contents: read      # чтение репоз
   packages: write
 
 on:

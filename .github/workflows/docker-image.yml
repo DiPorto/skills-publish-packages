@@ -28,5 +28,5 @@ jobs:
           context: .   # корень репозитория, где лежит Dockerfile
           push: true
           tags: |
-            ghcr.io/dioorto/skills-publish-packages:latest
+            ghcr.io/diporto/skills-publish-packages:latest
             ghcr.io/diporto/skills-publish-packages:sha-${{ github.sha }}

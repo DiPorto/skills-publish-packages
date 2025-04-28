@@ -1,6 +1,10 @@
 # .github/workflows/docker-image.yml
 name: Build and Publish Docker Image
 
+permissions:
+  contents: read      # чтение репо
+  packages: write
+
 on:
   workflow_dispatch:
   push:

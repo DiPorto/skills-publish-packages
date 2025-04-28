@@ -1,8 +1,8 @@
 # .github/workflows/docker-image.yml
-name: Build and Publish Docker Image
+name: Enable GHCR & Build and Publish Docker Image
 
 permissions:
-  contents: read      # чтение репо
+  contents: read
   packages: write
 
 on:
@@ -13,23 +13,49 @@ on:
       - 'feature/*'
 
 jobs:
-  build-and-push:
+  enable-ghcr-access:
+    name: Enable GitHub Actions publishing to GHCR
     runs-on: ubuntu-latest
     steps:
-      # 4.1. Checkout
-      - uses: actions/checkout@v4
-     
-      # 4.3. Логин в GHCR
-      - uses: docker/login-action@v2
+      - name: Grant Actions access to Container package
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.request(
+              'POST /orgs/{org}/packages/container/{package_name}/settings/add_actions_access',
+              {
+                org: 'diporto',
+                package_name: 'skills-publish-packages'
+              }
+            );
+
+  build-and-push:
+    name: Build & Publish Docker Image
+    runs-on: ubuntu-latest
+    needs: enable-ghcr-access
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm & build
+        run: |
+          npm install -g pnpm
+          pnpm install
+          pnpm run build
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: diporto
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 4.4. Сборка и пуш Docker-образа
-      - uses: docker/build-push-action@v5
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
         with:
-          context: .  # корень репозитория, где лежит Dockerfile
+          context: .
           push: true
           tags: |
             ghcr.io/diporto/skills-publish-packages:latest

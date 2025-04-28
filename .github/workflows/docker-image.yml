@@ -1,4 +1,3 @@
-# .github/workflows/docker-image.yml
 name: Build and Publish Docker Image
 
 permissions:
@@ -15,21 +14,35 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 1. Приводим OWNER к нижнему регистру и сохраняем в $LOWER_OWNER
+      - name: Set lower-case owner
+        shell: bash
+        run: |
+          echo "LOWER_OWNER=$(echo \"$GITHUB_REPOSITORY_OWNER\" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ env.LOWER_OWNER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push Image
+      - name: Install pnpm & build
+        run: |
+          npm install -g pnpm
+          pnpm install
+          pnpm run build
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
+            ghcr.io/${{ env.LOWER_OWNER }}/skills-publish-packages:latest
+            ghcr.io/${{ env.LOWER_OWNER }}/skills-publish-packages:sha-${{ github.sha }}
